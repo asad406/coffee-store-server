@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -35,12 +35,17 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
-
     app.post('/coffee', async(req, res) =>{
         const coffee = req.body;
         console.log(coffee)
         const result = await coffeeCollection.insertOne(coffee);
         res.send(result);
+    })
+
+    app.delete('/coffee/:id', async(req,res) => {
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await coffeeCollection.deleteOne(query)
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
