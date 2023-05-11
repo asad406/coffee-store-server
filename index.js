@@ -35,6 +35,36 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
+
+    app.get('/tea/:id', async(req,res) =>{
+      console.log(req)
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const result = await coffeeCollection.findOne(filter);
+        res.send(result);
+    })
+
+    app.put('/teaCoffee/:id', async(req,res) =>{
+      const id = req.params.id;
+      const coffee = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const option = {upsert:true};
+      const updateCoffee = {
+          $set:{
+            name:coffee.name, 
+            quantity:coffee.quantity, 
+            supplier:coffee.supplier,
+            test:coffee.test, 
+            category:coffee.category, 
+            details:coffee.details, 
+            photo:coffee.photo,
+          }
+      }
+      const result = await coffeeCollection.updateOne(filter,updateCoffee, option);
+      res.send(result);
+
+    })
+
     app.post('/coffee', async(req, res) =>{
         const coffee = req.body;
         console.log(coffee)
@@ -44,8 +74,10 @@ async function run() {
 
     app.delete('/coffee/:id', async(req,res) => {
         const id = req.params.id;
+        console.log('delete', id)
         const query = {_id: new ObjectId(id)};
         const result = await coffeeCollection.deleteOne(query)
+        res.send(result)
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
